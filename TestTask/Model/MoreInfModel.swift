@@ -7,3 +7,7 @@
 //
 
 import Foundation
+class MoreInfModel{
+    var type: String?
+    var name: String?
+}
