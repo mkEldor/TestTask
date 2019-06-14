@@ -16,12 +16,18 @@ class ViewController: UIViewController {
     
     var contacts = [ContactsModel]()
     var currentContacts = [ContactsModel]()
+    var searchedArray = [ContactsModel]()
     var employments = [EmploymentModel]()
+    var genderSearcharray = [ContactsModel]()
     var tableView = UITableView()
     var searchBar = UISearchBar()
     
+    var selectedGenderType = ""
+    var searchText = ""
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = "Contacts"
         getContacts()
         setupViews()
         
@@ -47,6 +53,7 @@ class ViewController: UIViewController {
             }
             
             self.currentContacts = self.contacts
+            self.searchedArray = self.contacts
             self.tableView.reloadData()
             print(self.contacts)
             
@@ -58,8 +65,7 @@ class ViewController: UIViewController {
         employments.append(fromEmploymentData(data: data["employment"] as AnyObject))
 
         contacts.id = data["id"] as? Int
-        contacts.first_name = data["first_name"] as? String
-        contacts.last_name = data["last_name"] as? String
+        contacts.nameAndSurname = "\((data["first_name"] as? String)!) \((data["last_name"] as? String)!)"
         contacts.photo = data["photo"] as? String
         contacts.gender = data["gender"] as? String
         contacts.ip_address = data["ip_address"] as? String
@@ -87,9 +93,10 @@ extension ViewController:  UITableViewDelegate, UITableViewDataSource, UISearchB
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ContactsTableViewCell
         
-        cell.name_surname.text = "\(currentContacts[indexPath.row].first_name!) \(currentContacts[indexPath.row].last_name!)"
+        cell.name_surname.text = currentContacts[indexPath.row].nameAndSurname// "\(currentContacts[indexPath.row].first_name!) \(currentContacts[indexPath.row].last_name!)"
         cell.gender.text = currentContacts[indexPath.row].gender
         cell.photo.load(fromUrl: currentContacts[indexPath.row].photo!, complation: nil)
+        cell.selectionStyle = .none
         
         return cell
     }
@@ -99,7 +106,7 @@ extension ViewController:  UITableViewDelegate, UITableViewDataSource, UISearchB
         let nextVC = ContactDetailViewController()
         let cell = tableView.cellForRow(at: indexPath) as! ContactsTableViewCell
         
-        nextVC.name_surname.text = cell.name_surname.text!
+        nextVC.nameAndSurname.text = cell.name_surname.text!
         nextVC.gender.text = cell.gender.text!
         nextVC.photo.image = cell.photo.image!
         nextVC.informs.append(currentContacts[indexPath.row].email!)
@@ -108,53 +115,76 @@ extension ViewController:  UITableViewDelegate, UITableViewDataSource, UISearchB
         
         navigationController?.pushViewController(nextVC, animated: true)
     }
+ 
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        searchBar.endEditing(true)
+    }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        currentContacts = contacts.filter({ contact -> Bool in
+        searchedArray = contacts
+        searchedArray = contacts.filter({ contact -> Bool in
             switch searchBar.selectedScopeButtonIndex {
             case 0:
                 if searchText.isEmpty {currentContacts = contacts; return true }
-                return contact.first_name!.lowercased().contains(searchText.lowercased())
+                return contact.nameAndSurname!.lowercased().contains(searchText.lowercased())
             case 1:
                 if searchText.isEmpty { return contact.gender == "Male" }
-                return contact.first_name!.lowercased().contains(searchText.lowercased()) &&
+                return contact.nameAndSurname!.lowercased().contains(searchText.lowercased()) &&
                     contact.gender == "Male"
             case 2:
                 if searchText.isEmpty { return contact.gender == "Female" }
-                return contact.first_name!.lowercased().contains(searchText.lowercased()) &&
+                return contact.nameAndSurname!.lowercased().contains(searchText.lowercased()) &&
                     contact.gender == "Female"
             default:
                 return false
             }
+            
         })
+        self.searchText = searchText
         
+        currentContacts = searchedArray
         tableView.reloadData()
     }
     
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
         switch selectedScope {
         case 0:
-            currentContacts = contacts
+            self.searchBar(searchBar, textDidChange: searchText)
+            selectedGenderType = "All"
         case 1:
-            currentContacts = contacts.filter({ contact -> Bool in
-                    contact.gender == "Male"
-            })
+            self.searchBar(searchBar, textDidChange: searchText)
+            selectedGenderType = "Male"
+
         case 2:
-            currentContacts = contacts.filter({ contact -> Bool in
-                    contact.gender == "Female"
-            })
+            self.searchBar(searchBar, textDidChange: searchText)
+            selectedGenderType = "Female"
+
         default:
             break
         }
         tableView.reloadData()
     }
     
+    func cancelAction(_ gender: String){
+        searchedArray = contacts
+        currentContacts = searchedArray.filter({ contact -> Bool in
+            contact.gender == gender
+        })
+    }
+    
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchText = ""
         searchBar.text = nil
-        currentContacts = contacts
+        if selectedGenderType == "Male" || selectedGenderType == "Female"{
+            cancelAction(selectedGenderType)
+        }else{
+            currentContacts = contacts
+        }
         tableView.reloadData()
+        
         searchBar.endEditing(true)
     }
+    
 }
 
 extension ViewController: ViewInstalation{
@@ -199,6 +229,7 @@ extension ViewController: ViewInstalation{
         
         tableView.delegate = self
         tableView.dataSource = self
+//        tableView.allowsSelection = .
         tableView.register(ContactsTableViewCell.self, forCellReuseIdentifier: "cell")
         
     }

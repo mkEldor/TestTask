@@ -11,7 +11,7 @@ import UIKit
 class ContactDetailViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     var photo = UIImageView()
-    var name_surname = UILabel()
+    var nameAndSurname = UILabel()
     var gender = UILabel()
     var moreInfTabelView = UITableView()
     var types = ["Email", "IP address", "Employment"]
@@ -20,6 +20,7 @@ class ContactDetailViewController: UIViewController, UITableViewDelegate, UITabl
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
+        self.title = nameAndSurname.text
         print(informs)
         setupViews()
     }
@@ -41,7 +42,7 @@ class ContactDetailViewController: UIViewController, UITableViewDelegate, UITabl
 extension ContactDetailViewController: ViewInstalation{
     func addSubviews() {
         view.addSubview(moreInfTabelView)
-        view.addSubview(name_surname)
+        view.addSubview(nameAndSurname)
         view.addSubview(photo)
         view.addSubview(gender)
         
@@ -50,7 +51,7 @@ extension ContactDetailViewController: ViewInstalation{
     func addConstraints() {
         var layoutConstraints = [NSLayoutConstraint]()
         
-        name_surname.translatesAutoresizingMaskIntoConstraints = false
+        nameAndSurname.translatesAutoresizingMaskIntoConstraints = false
         photo.translatesAutoresizingMaskIntoConstraints = false
         gender.translatesAutoresizingMaskIntoConstraints = false
         moreInfTabelView.translatesAutoresizingMaskIntoConstraints = false
@@ -61,9 +62,9 @@ extension ContactDetailViewController: ViewInstalation{
             photo.topAnchor.constraint(equalTo: view.topAnchor, constant: 70 + 8),
             photo.heightAnchor.constraint(equalToConstant: 60),
             
-            name_surname.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 8),
-            name_surname.leadingAnchor.constraint(equalTo: photo.trailingAnchor, constant: 16),
-            name_surname.centerYAnchor.constraint(equalTo: photo.centerYAnchor, constant: -16),
+            nameAndSurname.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 8),
+            nameAndSurname.leadingAnchor.constraint(equalTo: photo.trailingAnchor, constant: 16),
+            nameAndSurname.centerYAnchor.constraint(equalTo: photo.centerYAnchor, constant: -16),
             
             gender.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 8),
             gender.leadingAnchor.constraint(equalTo: photo.trailingAnchor, constant: 16),
@@ -86,7 +87,7 @@ extension ContactDetailViewController: ViewInstalation{
         photo.layer.masksToBounds = true
 //        photo.image = #imageLiteral(resourceName: "fc45933e-7ecc-42d5-a08c-fa36f1c38047")
         
-        name_surname.font = UIFont.boldSystemFont(ofSize: 16.0)
+        nameAndSurname.font = UIFont.boldSystemFont(ofSize: 16.0)
         
         gender.textColor = .gray
         gender.font = UIFont.systemFont(ofSize: 14)

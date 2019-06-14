@@ -11,8 +11,8 @@ import UIKit
 
 class ContactsModel: EmploymentModel {
     
-    var first_name: String?
-    var last_name: String?
+    var nameAndSurname: String?
+//    var last_name: String?
     var photo: String?
     var gender: String?
     var email: String?
