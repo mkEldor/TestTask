@@ -26,6 +26,7 @@ class ViewController: UIViewController {
     var searchText = ""
     
     override func viewDidLoad() {
+        
         super.viewDidLoad()
         self.title = "Contacts"
         getContacts()
@@ -63,7 +64,7 @@ class ViewController: UIViewController {
     private func fromData(data: AnyObject) -> ContactsModel {
         let contacts: ContactsModel = ContactsModel()
         employments.append(fromEmploymentData(data: data["employment"] as AnyObject))
-
+        
         contacts.id = data["id"] as? Int
         contacts.nameAndSurname = "\((data["first_name"] as? String)!) \((data["last_name"] as? String)!)"
         contacts.photo = data["photo"] as? String
@@ -81,7 +82,7 @@ class ViewController: UIViewController {
         
         return employment
     }
-
+    
 }
 
 extension ViewController:  UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate{
@@ -93,7 +94,7 @@ extension ViewController:  UITableViewDelegate, UITableViewDataSource, UISearchB
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ContactsTableViewCell
         
-        cell.name_surname.text = currentContacts[indexPath.row].nameAndSurname// "\(currentContacts[indexPath.row].first_name!) \(currentContacts[indexPath.row].last_name!)"
+        cell.nameAndSurname.text = currentContacts[indexPath.row].nameAndSurname
         cell.gender.text = currentContacts[indexPath.row].gender
         cell.photo.load(fromUrl: currentContacts[indexPath.row].photo!, complation: nil)
         cell.selectionStyle = .none
@@ -106,7 +107,7 @@ extension ViewController:  UITableViewDelegate, UITableViewDataSource, UISearchB
         let nextVC = ContactDetailViewController()
         let cell = tableView.cellForRow(at: indexPath) as! ContactsTableViewCell
         
-        nextVC.nameAndSurname.text = cell.name_surname.text!
+        nextVC.nameAndSurname.text = cell.nameAndSurname.text!
         nextVC.gender.text = cell.gender.text!
         nextVC.photo.image = cell.photo.image!
         nextVC.informs.append(currentContacts[indexPath.row].email!)
@@ -115,7 +116,7 @@ extension ViewController:  UITableViewDelegate, UITableViewDataSource, UISearchB
         
         navigationController?.pushViewController(nextVC, animated: true)
     }
- 
+    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         searchBar.endEditing(true)
     }
@@ -123,7 +124,9 @@ extension ViewController:  UITableViewDelegate, UITableViewDataSource, UISearchB
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         searchedArray = contacts
         searchedArray = contacts.filter({ contact -> Bool in
+            
             switch searchBar.selectedScopeButtonIndex {
+                
             case 0:
                 if searchText.isEmpty {currentContacts = contacts; return true }
                 return contact.nameAndSurname!.lowercased().contains(searchText.lowercased())
@@ -140,10 +143,11 @@ extension ViewController:  UITableViewDelegate, UITableViewDataSource, UISearchB
             }
             
         })
-        self.searchText = searchText
         
+        self.searchText = searchText
         currentContacts = searchedArray
         tableView.reloadData()
+        
     }
     
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
@@ -154,22 +158,15 @@ extension ViewController:  UITableViewDelegate, UITableViewDataSource, UISearchB
         case 1:
             self.searchBar(searchBar, textDidChange: searchText)
             selectedGenderType = "Male"
-
+            
         case 2:
             self.searchBar(searchBar, textDidChange: searchText)
             selectedGenderType = "Female"
-
+            
         default:
             break
         }
         tableView.reloadData()
-    }
-    
-    func cancelAction(_ gender: String){
-        searchedArray = contacts
-        currentContacts = searchedArray.filter({ contact -> Bool in
-            contact.gender == gender
-        })
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
@@ -183,6 +180,13 @@ extension ViewController:  UITableViewDelegate, UITableViewDataSource, UISearchB
         tableView.reloadData()
         
         searchBar.endEditing(true)
+    }
+    
+    func cancelAction(_ gender: String){
+        searchedArray = contacts
+        currentContacts = searchedArray.filter({ contact -> Bool in
+            contact.gender == gender
+        })
     }
     
 }
@@ -199,14 +203,14 @@ extension ViewController: ViewInstalation{
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         searchBar.translatesAutoresizingMaskIntoConstraints = false
-    
+        
         layoutConstraints = [
             
             searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 4),
             searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -4),
             searchBar.topAnchor.constraint(equalTo: view.topAnchor, constant: (navigationController?.navigationBar.bounds.height)! + UIApplication.shared.statusBarFrame.height),
             searchBar.heightAnchor.constraint(equalToConstant: 100),
-
+            
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 8),
@@ -229,7 +233,6 @@ extension ViewController: ViewInstalation{
         
         tableView.delegate = self
         tableView.dataSource = self
-//        tableView.allowsSelection = .
         tableView.register(ContactsTableViewCell.self, forCellReuseIdentifier: "cell")
         
     }

@@ -34,7 +34,6 @@ class MoreInfTableViewCell: UITableViewCell {
 extension MoreInfTableViewCell: ViewInstalation{
     func addSubviews() {
         contentView.addSubview(typeOfInfo)
-        //        contentView.addSubview(surname)
         contentView.addSubview(nameOfInfo)
         
     }

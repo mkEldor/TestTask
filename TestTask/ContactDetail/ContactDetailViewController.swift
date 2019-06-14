@@ -19,9 +19,7 @@ class ContactDetailViewController: UIViewController, UITableViewDelegate, UITabl
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
         self.title = nameAndSurname.text
-        print(informs)
         setupViews()
     }
     
@@ -31,8 +29,11 @@ class ContactDetailViewController: UIViewController, UITableViewDelegate, UITabl
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "moreinf", for: indexPath) as! MoreInfTableViewCell
+        
         cell.nameOfInfo.text = informs[indexPath.row]
         cell.typeOfInfo.text = types[indexPath.row]
+        cell.selectionStyle = .none
+        
         return cell
     }
     
@@ -85,7 +86,6 @@ extension ContactDetailViewController: ViewInstalation{
         
         photo.layer.cornerRadius = 30
         photo.layer.masksToBounds = true
-//        photo.image = #imageLiteral(resourceName: "fc45933e-7ecc-42d5-a08c-fa36f1c38047")
         
         nameAndSurname.font = UIFont.boldSystemFont(ofSize: 16.0)
         
